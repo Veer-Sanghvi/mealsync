@@ -770,6 +770,54 @@
       border-bottom: 0;
     }
 
+    .key-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(45, 106, 79, 0.12);
+      background: linear-gradient(145deg, rgba(255, 253, 249, 0.98), rgba(255, 248, 239, 0.92));
+      box-shadow: 0 10px 24px rgba(61, 45, 31, 0.08);
+    }
+
+    .key-banner-copy {
+      display: grid;
+      gap: 4px;
+    }
+
+    .key-banner-copy strong {
+      font-size: 0.95rem;
+    }
+
+    .key-banner-copy span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .key-banner-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex: 1;
+      justify-content: flex-end;
+    }
+
+    .key-banner-form input {
+      max-width: 320px;
+    }
+
+    .key-status {
+      min-width: 96px;
+      color: var(--green);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
     .print-sheet {
       display: grid;
       gap: 20px;
@@ -908,7 +956,7 @@
 <body>
   <div class="confetti-layer" id="confettiLayer"></div>
 
-  <div class="loading-overlay" id="loadingOverlay" aria-live="polite" aria-busy="true">
+  <div class="loading-overlay hidden" id="loadingOverlay" aria-live="polite" aria-busy="false">
     <div class="loading-card">
       <div class="loader" aria-hidden="true"></div>
       <h3>Cooking up your week...</h3>
@@ -948,6 +996,25 @@
   </div>
 
   <main class="app-shell">
+    <section class="key-banner" aria-label="OpenAI API key panel">
+      <div class="key-banner-copy">
+        <strong>OpenAI API Key</strong>
+        <span>Saved in this browser tab for the current session only.</span>
+      </div>
+      <div class="key-banner-form">
+        <label class="hidden" for="apiKeyInput">OpenAI API key</label>
+        <input
+          id="apiKeyInput"
+          type="password"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Paste your OpenAI API key"
+        />
+        <button class="btn btn-soft" id="saveKeyButton" type="button">Save Key</button>
+        <span class="key-status" id="keyStatus" aria-live="polite"></span>
+      </div>
+    </section>
+
     <section class="hero">
       <div class="hero-content">
         <div class="eyebrow">MealSync • AI Dinner Planning for Shared Student Homes</div>
@@ -1083,8 +1150,6 @@
         <div id="mealPrepTip" class="tip-box hidden"></div>
       </section>
     </div>
-
-    <p class="footer-note">Powered by OpenAI `gpt-4o`. Add your API key in the config block near the top of the script before production use.</p>
   </main>
 
   <script>
@@ -1155,7 +1220,10 @@
       splitModal: document.getElementById("splitModal"),
       splitModalContent: document.getElementById("splitModalContent"),
       printModal: document.getElementById("printModal"),
-      printModalContent: document.getElementById("printModalContent")
+      printModalContent: document.getElementById("printModalContent"),
+      apiKeyInput: document.getElementById("apiKeyInput"),
+      saveKeyButton: document.getElementById("saveKeyButton"),
+      keyStatus: document.getElementById("keyStatus")
     };
 
     const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -1166,6 +1234,7 @@
     initialize();
 
     function initialize() {
+      syncStoredApiKeyUI();
       renderCuisineGrid();
       renderSkillLevels();
       bindEvents();
@@ -1175,19 +1244,48 @@
     function bindEvents() {
       document.getElementById("addRoommateButton").addEventListener("click", handleAddRoommate);
       document.getElementById("generatePlanButton").addEventListener("click", () => {
+        const overlay = document.getElementById("loadingOverlay");
+        MealSyncConfig.openAIApiKey = sessionStorage.getItem("oai_key") || "";
+        overlay.classList.remove("hidden");
+        overlay.setAttribute("aria-busy", "true");
         appState.hasExplicitGenerateRequest = true;
         generateMealPlan();
       });
-      document.getElementById("demoHouseButton").addEventListener("click", loadDemoHouse);
+      document.getElementById("demoHouseButton").addEventListener("click", () => {
+        const overlay = document.getElementById("loadingOverlay");
+        MealSyncConfig.openAIApiKey = sessionStorage.getItem("oai_key") || "";
+        overlay.classList.remove("hidden");
+        overlay.setAttribute("aria-busy", "true");
+        loadDemoHouse();
+      });
       document.getElementById("clearHouseButton").addEventListener("click", clearHousehold);
       document.getElementById("copyListButton").addEventListener("click", copyGroceryList);
       document.getElementById("splitCostButton").addEventListener("click", openSplitModal);
       document.getElementById("printWeekButton").addEventListener("click", openPrintModal);
       document.getElementById("confirmPrintButton").addEventListener("click", () => window.print());
+      elements.saveKeyButton.addEventListener("click", saveApiKey);
 
       document.querySelectorAll("[data-close-modal]").forEach((button) => {
         button.addEventListener("click", () => closeModal(button.dataset.closeModal));
       });
+    }
+
+    function syncStoredApiKeyUI() {
+      const savedKey = sessionStorage.getItem("oai_key") || "";
+      elements.apiKeyInput.value = savedKey;
+      elements.keyStatus.textContent = savedKey ? "Saved" : "";
+    }
+
+    function saveApiKey() {
+      const apiKey = elements.apiKeyInput.value.trim();
+      if (apiKey) {
+        sessionStorage.setItem("oai_key", apiKey);
+        elements.keyStatus.textContent = "Saved";
+      } else {
+        sessionStorage.removeItem("oai_key");
+        elements.keyStatus.textContent = "Cleared";
+      }
+      MealSyncConfig.openAIApiKey = sessionStorage.getItem("oai_key") || "";
     }
 
     function renderCuisineGrid() {
@@ -1512,13 +1610,18 @@
     }
 
     async function generateMealPlan(triggerSource = "full-plan") {
+      const overlay = document.getElementById("loadingOverlay");
       if (!appState.roommates.length) {
+        overlay.classList.add("hidden");
+        overlay.setAttribute("aria-busy", "false");
         alert("Add at least one roommate before generating a meal plan.");
         return;
       }
 
       const budget = Number(elements.budgetInput.value || 0);
       if (!budget || budget <= 0) {
+        overlay.classList.add("hidden");
+        overlay.setAttribute("aria-busy", "false");
         alert("Please add a weekly grocery budget.");
         return;
       }
@@ -1537,6 +1640,8 @@
         alert(error.message || "MealSync ran into an issue generating your meal plan.");
       } finally {
         showLoading(false);
+        overlay.classList.add("hidden");
+        overlay.setAttribute("aria-busy", "false");
       }
     }
 
