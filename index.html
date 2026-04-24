@@ -1132,7 +1132,8 @@
       selectedCuisines: [],
       skillLevel: "Moderate",
       mealPlan: null,
-      checkedItems: new Set()
+      checkedItems: new Set(),
+      hasExplicitGenerateRequest: false
     };
 
     const elements = {
@@ -1173,7 +1174,10 @@
 
     function bindEvents() {
       document.getElementById("addRoommateButton").addEventListener("click", handleAddRoommate);
-      document.getElementById("generatePlanButton").addEventListener("click", () => generateMealPlan());
+      document.getElementById("generatePlanButton").addEventListener("click", () => {
+        appState.hasExplicitGenerateRequest = true;
+        generateMealPlan();
+      });
       document.getElementById("demoHouseButton").addEventListener("click", loadDemoHouse);
       document.getElementById("clearHouseButton").addEventListener("click", clearHousehold);
       document.getElementById("copyListButton").addEventListener("click", copyGroceryList);
@@ -1278,6 +1282,7 @@
       appState.skillLevel = "Moderate";
       appState.mealPlan = null;
       appState.checkedItems = new Set();
+      appState.hasExplicitGenerateRequest = false;
       elements.budgetInput.value = "";
       resetRoommateForm();
       syncUI();
@@ -1311,6 +1316,7 @@
       appState.skillLevel = "Moderate";
       appState.mealPlan = null;
       appState.checkedItems = new Set();
+      appState.hasExplicitGenerateRequest = true;
       elements.budgetInput.value = "145";
       syncUI();
       generateMealPlan();
@@ -1771,7 +1777,8 @@
     }
 
     function showLoading(visible) {
-      elements.loadingOverlay.classList.toggle("active", visible);
+      const canShowLoading = appState.hasExplicitGenerateRequest && appState.roommates.length > 0;
+      elements.loadingOverlay.classList.toggle("active", Boolean(visible && canShowLoading));
     }
 
     function fireConfetti() {
