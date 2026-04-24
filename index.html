@@ -1192,6 +1192,107 @@
       { value: "Adventurous", detail: "More variety, bigger flavors, and a little extra effort." }
     ];
 
+    const FALLBACK_PLAN = {
+      weekPlan: [
+        {
+          dayName: "Monday",
+          mealName: "Coconut Chickpea Curry Bowls",
+          description: "Creamy coconut curry with chickpeas, spinach, carrots, and jasmine rice for a warm, low-stress start to the week.",
+          servings: 4,
+          estimatedCost: 15,
+          prepTime: "35 minutes",
+          dietaryTags: ["Vegan", "Gluten-Free", "Dairy-Free", "Halal", "No Beef"],
+          cuisineType: "Indian"
+        },
+        {
+          dayName: "Tuesday",
+          mealName: "Roasted Veggie Taco Plates",
+          description: "Corn tortillas layered with black beans, roasted peppers, crunchy cabbage, and avocado-lime drizzle.",
+          servings: 4,
+          estimatedCost: 14,
+          prepTime: "30 minutes",
+          dietaryTags: ["Vegan", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+          cuisineType: "Mexican"
+        },
+        {
+          dayName: "Wednesday",
+          mealName: "Sesame Ginger Rice Noodle Stir-Fry",
+          description: "Rice noodles tossed with tofu, broccoli, snap peas, and a ginger-garlic sauce that comes together in one pan.",
+          servings: 4,
+          estimatedCost: 16,
+          prepTime: "28 minutes",
+          dietaryTags: ["Vegan", "Gluten-Free", "Dairy-Free"],
+          cuisineType: "Asian"
+        },
+        {
+          dayName: "Thursday",
+          mealName: "Stuffed Sweet Potatoes with Herby Lentils",
+          description: "Baked sweet potatoes loaded with cumin lentils, chopped herbs, and a bright cucumber salad.",
+          servings: 4,
+          estimatedCost: 13,
+          prepTime: "40 minutes",
+          dietaryTags: ["Vegan", "Gluten-Free", "Dairy-Free", "Nut-Free", "Halal"],
+          cuisineType: "Mediterranean"
+        },
+        {
+          dayName: "Friday",
+          mealName: "Sheet-Pan Shawarma Cauliflower Bowls",
+          description: "Spiced cauliflower and chickpeas roasted until crisp, served over rice with tahini slaw and herbs.",
+          servings: 4,
+          estimatedCost: 17,
+          prepTime: "35 minutes",
+          dietaryTags: ["Vegan", "Gluten-Free", "Dairy-Free", "Halal", "No Pork"],
+          cuisineType: "Middle Eastern"
+        },
+        {
+          dayName: "Saturday",
+          mealName: "Thai Basil Fried Rice",
+          description: "Vegetable-packed fried rice with crispy tofu, basil, and chili-lime flavor for an easy weekend dinner.",
+          servings: 4,
+          estimatedCost: 15,
+          prepTime: "25 minutes",
+          dietaryTags: ["Vegan", "Gluten-Free", "Dairy-Free"],
+          cuisineType: "Thai"
+        },
+        {
+          dayName: "Sunday",
+          mealName: "Creamy Tomato White Bean Pasta Bake",
+          description: "Gluten-free pasta baked with white beans, tomato sauce, spinach, and a dairy-free cheesy topping.",
+          servings: 4,
+          estimatedCost: 18,
+          prepTime: "45 minutes",
+          dietaryTags: ["Vegan", "Gluten-Free", "Dairy-Free", "Nut-Free"],
+          cuisineType: "Italian"
+        }
+      ],
+      groceryList: [
+        { item: "Onions", quantity: 8, unit: "pcs", estimatedCost: 5, category: "Produce" },
+        { item: "Garlic", quantity: 2, unit: "bulbs", estimatedCost: 2, category: "Produce" },
+        { item: "Spinach", quantity: 3, unit: "bags", estimatedCost: 9, category: "Produce" },
+        { item: "Bell peppers", quantity: 6, unit: "pcs", estimatedCost: 8, category: "Produce" },
+        { item: "Sweet potatoes", quantity: 6, unit: "pcs", estimatedCost: 7, category: "Produce" },
+        { item: "Avocados", quantity: 4, unit: "pcs", estimatedCost: 6, category: "Produce" },
+        { item: "Cucumber", quantity: 3, unit: "pcs", estimatedCost: 4, category: "Produce" },
+        { item: "Fresh basil", quantity: 2, unit: "bunches", estimatedCost: 3, category: "Produce" },
+        { item: "Extra-firm tofu", quantity: 5, unit: "blocks", estimatedCost: 15, category: "Protein" },
+        { item: "Canned chickpeas", quantity: 8, unit: "cans", estimatedCost: 10, category: "Protein" },
+        { item: "Brown lentils", quantity: 2, unit: "bags", estimatedCost: 5, category: "Protein" },
+        { item: "White beans", quantity: 4, unit: "cans", estimatedCost: 5, category: "Protein" },
+        { item: "Dairy-free yogurt", quantity: 2, unit: "tubs", estimatedCost: 8, category: "Dairy/Alt" },
+        { item: "Dairy-free shredded cheese", quantity: 2, unit: "bags", estimatedCost: 9, category: "Dairy/Alt" },
+        { item: "Jasmine rice", quantity: 2, unit: "bags", estimatedCost: 8, category: "Pantry" },
+        { item: "Rice noodles", quantity: 2, unit: "packs", estimatedCost: 6, category: "Pantry" },
+        { item: "Gluten-free pasta", quantity: 2, unit: "boxes", estimatedCost: 7, category: "Pantry" },
+        { item: "Coconut milk", quantity: 4, unit: "cans", estimatedCost: 8, category: "Pantry" },
+        { item: "Tahini", quantity: 1, unit: "jar", estimatedCost: 5, category: "Pantry" },
+        { item: "Corn tortillas", quantity: 2, unit: "packs", estimatedCost: 6, category: "Pantry" },
+        { item: "Frozen edamame", quantity: 2, unit: "bags", estimatedCost: 7, category: "Frozen" }
+      ],
+      totalEstimatedCost: 148,
+      budgetStatus: "On Track",
+      mealPrepTip: "Wash and chop onions, peppers, and herbs on Sunday so most dinners come together in one pan or pot."
+    };
+
     const appState = {
       roommates: [],
       selectedCuisines: [],
@@ -1689,6 +1790,11 @@
   - budgetStatus: 'Under', 'On Track', or 'Over' with a short explanation
   - mealPrepTip: one time-saving tip for the week`;
 
+      const storedKey = sessionStorage.getItem("oai_key");
+      if (storedKey === null) {
+        return buildFallbackPlan(payload);
+      }
+
       if (!MealSyncConfig.openAIApiKey) {
         if (MealSyncConfig.useMockDataIfNoApiKey) {
           await delay(1100);
@@ -1728,6 +1834,24 @@
         throw new Error("OpenAI returned an empty response.");
       }
       return JSON.parse(content);
+    }
+
+    function buildFallbackPlan(payload) {
+      const clonedPlan = JSON.parse(JSON.stringify(FALLBACK_PLAN));
+      const roommateCount = payload.roommates.length || 4;
+      const restrictions = Array.from(new Set(payload.roommates.flatMap((roommate) => roommate.dietaryRestrictions || [])));
+      const totalEstimatedCost = Number(clonedPlan.groceryList.reduce((sum, item) => sum + Number(item.estimatedCost || 0), 0).toFixed(2));
+      const budgetIndicator = getBudgetIndicator(totalEstimatedCost, payload.budget);
+
+      clonedPlan.weekPlan = clonedPlan.weekPlan.map((day) => ({
+        ...day,
+        servings: roommateCount,
+        dietaryTags: restrictions.length ? restrictions : day.dietaryTags
+      }));
+      clonedPlan.totalEstimatedCost = totalEstimatedCost;
+      clonedPlan.budgetStatus = budgetIndicator.label;
+
+      return clonedPlan;
     }
 
     async function requestMealSwap(payload, dayToReplace, dayIndex) {
