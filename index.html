@@ -770,54 +770,6 @@
       border-bottom: 0;
     }
 
-    .key-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-      padding: 14px 18px;
-      border-radius: 18px;
-      border: 1px solid rgba(45, 106, 79, 0.12);
-      background: linear-gradient(145deg, rgba(255, 253, 249, 0.98), rgba(255, 248, 239, 0.92));
-      box-shadow: 0 10px 24px rgba(61, 45, 31, 0.08);
-    }
-
-    .key-banner-copy {
-      display: grid;
-      gap: 4px;
-    }
-
-    .key-banner-copy strong {
-      font-size: 0.95rem;
-    }
-
-    .key-banner-copy span {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .key-banner-form {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      flex: 1;
-      justify-content: flex-end;
-    }
-
-    .key-banner-form input {
-      max-width: 320px;
-    }
-
-    .key-status {
-      min-width: 96px;
-      color: var(--green);
-      font-size: 0.9rem;
-      font-weight: 700;
-    }
-
     .print-sheet {
       display: grid;
       gap: 20px;
@@ -996,25 +948,6 @@
   </div>
 
   <main class="app-shell">
-    <section class="key-banner" aria-label="OpenAI API key panel">
-      <div class="key-banner-copy">
-        <strong>OpenAI API Key</strong>
-        <span>Saved in this browser tab for the current session only.</span>
-      </div>
-      <div class="key-banner-form">
-        <label class="hidden" for="apiKeyInput">OpenAI API key</label>
-        <input
-          id="apiKeyInput"
-          type="password"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="Paste your OpenAI API key"
-        />
-        <button class="btn btn-soft" id="saveKeyButton" type="button">Save Key</button>
-        <span class="key-status" id="keyStatus" aria-live="polite"></span>
-      </div>
-    </section>
-
     <section class="hero">
       <div class="hero-content">
         <div class="eyebrow">MealSync • AI Dinner Planning for Shared Student Homes</div>
@@ -1154,7 +1087,6 @@
 
   <script>
     const MealSyncConfig = {
-      openAIApiKey: "",
       model: "gpt-4o",
       useMockDataIfNoApiKey: true,
       maxRoommates: 6
@@ -1321,10 +1253,7 @@
       splitModal: document.getElementById("splitModal"),
       splitModalContent: document.getElementById("splitModalContent"),
       printModal: document.getElementById("printModal"),
-      printModalContent: document.getElementById("printModalContent"),
-      apiKeyInput: document.getElementById("apiKeyInput"),
-      saveKeyButton: document.getElementById("saveKeyButton"),
-      keyStatus: document.getElementById("keyStatus")
+      printModalContent: document.getElementById("printModalContent")
     };
 
     const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -1335,7 +1264,6 @@
     initialize();
 
     function initialize() {
-      syncStoredApiKeyUI();
       renderCuisineGrid();
       renderSkillLevels();
       bindEvents();
@@ -1346,7 +1274,6 @@
       document.getElementById("addRoommateButton").addEventListener("click", handleAddRoommate);
       document.getElementById("generatePlanButton").addEventListener("click", () => {
         const overlay = document.getElementById("loadingOverlay");
-        MealSyncConfig.openAIApiKey = sessionStorage.getItem("oai_key") || "";
         overlay.classList.remove("hidden");
         overlay.setAttribute("aria-busy", "true");
         appState.hasExplicitGenerateRequest = true;
@@ -1354,7 +1281,6 @@
       });
       document.getElementById("demoHouseButton").addEventListener("click", () => {
         const overlay = document.getElementById("loadingOverlay");
-        MealSyncConfig.openAIApiKey = sessionStorage.getItem("oai_key") || "";
         overlay.classList.remove("hidden");
         overlay.setAttribute("aria-busy", "true");
         loadDemoHouse();
@@ -1364,29 +1290,10 @@
       document.getElementById("splitCostButton").addEventListener("click", openSplitModal);
       document.getElementById("printWeekButton").addEventListener("click", openPrintModal);
       document.getElementById("confirmPrintButton").addEventListener("click", () => window.print());
-      elements.saveKeyButton.addEventListener("click", saveApiKey);
 
       document.querySelectorAll("[data-close-modal]").forEach((button) => {
         button.addEventListener("click", () => closeModal(button.dataset.closeModal));
       });
-    }
-
-    function syncStoredApiKeyUI() {
-      const savedKey = sessionStorage.getItem("oai_key") || "";
-      elements.apiKeyInput.value = savedKey;
-      elements.keyStatus.textContent = savedKey ? "Saved" : "";
-    }
-
-    function saveApiKey() {
-      const apiKey = elements.apiKeyInput.value.trim();
-      if (apiKey) {
-        sessionStorage.setItem("oai_key", apiKey);
-        elements.keyStatus.textContent = "Saved";
-      } else {
-        sessionStorage.removeItem("oai_key");
-        elements.keyStatus.textContent = "Cleared";
-      }
-      MealSyncConfig.openAIApiKey = sessionStorage.getItem("oai_key") || "";
     }
 
     function renderCuisineGrid() {
@@ -1790,24 +1697,10 @@
   - budgetStatus: 'Under', 'On Track', or 'Over' with a short explanation
   - mealPrepTip: one time-saving tip for the week`;
 
-      const storedKey = sessionStorage.getItem("oai_key");
-      if (storedKey === null) {
-        return buildFallbackPlan(payload);
-      }
-
-      if (!MealSyncConfig.openAIApiKey) {
-        if (MealSyncConfig.useMockDataIfNoApiKey) {
-          await delay(1100);
-          return buildMockMealPlan(payload);
-        }
-        throw new Error("Add your OpenAI API key to MealSyncConfig.openAIApiKey to generate a plan.");
-      }
-
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${MealSyncConfig.openAIApiKey}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           model: MealSyncConfig.model,
@@ -1855,19 +1748,10 @@
     }
 
     async function requestMealSwap(payload, dayToReplace, dayIndex) {
-      if (!MealSyncConfig.openAIApiKey) {
-        if (MealSyncConfig.useMockDataIfNoApiKey) {
-          await delay(650);
-          return buildMockMealSwap(payload, dayToReplace, dayIndex);
-        }
-        throw new Error("Add your OpenAI API key to MealSyncConfig.openAIApiKey to swap meals.");
-      }
-
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${MealSyncConfig.openAIApiKey}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           model: MealSyncConfig.model,
