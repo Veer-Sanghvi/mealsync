@@ -1,25 +1,34 @@
 # MealSync
 
-MealSync is a single-page AI meal planner for shared student households. It helps roommates with different dietary restrictions agree on a 7-day dinner plan and one consolidated grocery list.
+MealSync is a Next.js App Router web app for shared student households. It uses the Vercel AI SDK to stream a 7-day dinner plan that satisfies multiple dietary restrictions at once, keeps an eye on the weekly grocery budget, and consolidates everything into one shopping list.
 
-## How To Use
+## Stack
 
-1. Open `index.html` in a browser.
-2. Add roommates with their dietary restrictions and dislikes, or click `Demo House`.
-3. Set the total weekly grocery budget, choose up to 3 cuisines, and pick a cooking skill level.
-4. Click `Generate Meal Plan`.
-5. Review the weekly calendar, swap meals if needed, and use the grocery list tools to copy, print, or split the cost.
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Vercel AI SDK with `streamObject`
+- Framer Motion
+- shadcn/ui with local 21st-style UI primitives
 
-## OpenAI Setup
+## Local Development
 
-At the top of the script in `index.html`, update:
-
-```js
-const MealSyncConfig = {
-  openAIApiKey: "YOUR_OPENAI_API_KEY",
-  model: "gpt-4o",
-  useMockDataIfNoApiKey: true
-};
+```bash
+npm install
+npm run dev
 ```
 
-If no API key is set and `useMockDataIfNoApiKey` is `true`, the app uses built-in demo data so the experience still works for judges and local previews.
+Create `.env.local` with:
+
+```bash
+OPENAI_API_KEY=your_key_here
+```
+
+Then open [http://localhost:3000](http://localhost:3000).
+
+## Deployment
+
+1. Push the repo to GitHub.
+2. Import it into Vercel.
+3. Add `OPENAI_API_KEY` in Vercel Environment Variables.
+4. Deploy.
