@@ -396,13 +396,13 @@ export function MealSyncApp() {
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Button
-                    className="rounded-full bg-[#E07A5F] px-5 py-6 text-white hover:bg-[#cf6a50]"
+                    className="bg-[#E07A5F] text-white hover:bg-[#cf6a50] font-semibold px-6 py-3 rounded-full"
                     onClick={handleDemoHouse}
                   >
                     Demo House
                   </Button>
                   <ShimmerButton
-                    className="bg-[#2D6A4F] px-5 py-3"
+                    className="bg-[#2D6A4F] text-white hover:bg-[#245a42] font-semibold px-6 py-3 rounded-full"
                     onClick={() => handleGenerate()}
                     disabled={!householdPayload || isLoading}
                   >
