@@ -26,7 +26,6 @@ import { Input } from "@/components/ui/input";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TextReveal } from "@/components/ui/text-reveal";
 import { Textarea } from "@/components/ui/textarea";
@@ -401,13 +400,13 @@ export function MealSyncApp() {
                   >
                     Demo House
                   </Button>
-                  <ShimmerButton
-                    className="bg-[#2D6A4F] text-white hover:bg-[#245a42] font-semibold px-6 py-3 rounded-full"
+                  <button
+                    className="bg-[#2D6A4F] text-white font-semibold px-6 py-3 rounded-full hover:bg-[#245a42] transition-colors"
                     onClick={() => handleGenerate()}
                     disabled={!householdPayload || isLoading}
                   >
-                    {isLoading ? "Generating..." : "Generate Meal Plan"}
-                  </ShimmerButton>
+                    Generate Meal Plan
+                  </button>
                 </div>
               </div>
             }
