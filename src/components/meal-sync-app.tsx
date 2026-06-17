@@ -390,7 +390,7 @@ export function MealSyncApp() {
                   </h1>
                   <TextReveal
                     className="max-w-2xl text-base leading-7 text-stone-600 md:text-lg"
-                    text="Balance conflicting dietary restrictions, keep the weekly grocery run under budget, and generate one shared dinner plan the whole house can actually cook."
+                    text="Six roommates, three dietary restrictions, one grocery budget, and nobody can agree on dinner. MealSync generates a 7-night meal plan that satisfies every restriction simultaneously, then produces a shared grocery list everyone can actually use."
                   />
                 </div>
                 <div className="flex flex-wrap gap-3">
